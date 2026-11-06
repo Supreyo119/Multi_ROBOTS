@@ -1,12 +1,6 @@
 
 ## Multi-Robot Navigation in ROS 2 and Gazebo
 
-### Simulation Demonstration
-
-The following animation demonstrates multi-robot navigation in the Gazebo simulation environment.
-
-![Multi-Robot Gazebo Simulation](multirobots.gif)
-
 
 
 
