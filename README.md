@@ -139,15 +139,3 @@ Future directions include:
 
 For technical details about the Gazebo architecture, control protocol, and implementation limitations, see [GAZEBO.md](GAZEBO.md).
 
-## Author
-
-**Supreyo Chakravorty Pretom**
-
-Lecturer, Department of Electrical and Electronic Engineering  
-University of Global Village, Bangladesh
-
-GitHub: [Supreyo119](https://github.com/Supreyo119)
-
----
-
-*This project is a research-oriented simulation platform. Learning-based navigation is experimental and does not guarantee collision-free movement.*
