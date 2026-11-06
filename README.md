@@ -1,4 +1,15 @@
-# Three-robot RL formation simulator
+
+## Multi-Robot Navigation in ROS 2 and Gazebo
+
+### Simulation Demonstration
+
+The following animation demonstrates multi-robot navigation in the Gazebo simulation environment.
+
+![Multi-Robot Gazebo Simulation](multirobots.gif)
+
+
+
+
 
 The Gazebo version now has a larger primary, obstacles, primary-only lidar/camera, ROS 2 communication, and online ANN/Transformer DQN follower control. See [GAZEBO.md](GAZEBO.md) for the current architecture, map, protocol, and limitations.
 
