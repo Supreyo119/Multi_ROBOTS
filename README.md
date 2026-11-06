@@ -11,46 +11,149 @@ The following animation demonstrates multi-robot navigation in the Gazebo simula
 
 
 
-The Gazebo version now has a larger primary, obstacles, primary-only lidar/camera, ROS 2 communication, and online ANN/Transformer DQN follower control. See [GAZEBO.md](GAZEBO.md) for the current architecture, map, protocol, and limitations.
+A multi-agent robotic simulation framework for **autonomous navigation, formation control, obstacle avoidance, and reinforcement learning**, developed using ROS 2 Jazzy, Gazebo Harmonic, and Python.
 
-Launch in Gazebo Harmonic with ROS 2 Jazzy installed:
+The system consists of three mobile robots: one leader and two followers. The leader navigates through an obstacle-filled environment while the follower robots coordinate their movements to maintain formation.
+
+## Simulation Demonstration
+
+![Multi-Robot Gazebo Simulation](multirobots.gif)
+
+## Project Overview
+
+This project explores multi-agent robot navigation by combining traditional path-planning algorithms with learning-based control.
+
+The simulation includes:
+
+- **Three differential-drive robots:** One leader and two followers operating in a shared environment.
+- **Autonomous navigation:** A* path planning for the leader with obstacle-aware movement.
+- **Formation control:** Two follower robots maintain target positions relative to the leader.
+- **Sensor integration:** A 360-degree LiDAR and RGB camera mounted on the leader.
+- **ROS 2 communication:** Robot state sharing and coordinated control through ROS 2 topics.
+- **Reinforcement learning:** ANN/Transformer-based Deep Q-Network (DQN) for online follower control.
+- **Safety mechanisms:** Obstacle-clearance checks, stuck detection, and simulation-based recovery.
+
+## System Architecture
+
+The simulation follows a leader–follower architecture.
+
+**Leader Robot**
+
+The leader uses A* path planning and sensor information to navigate through the environment. It communicates its position, trajectory, and perception information to the followers.
+
+**Follower Robots**
+
+Two follower robots track their desired positions behind the leader while responding to obstacles and changes in formation.
+
+Their controllers combine an artificial neural network (ANN), a Transformer-based observation encoder, and Deep Q-Learning to select control priorities.
+
+The learning controller operates alongside conventional safety and recovery mechanisms.
+
+## Technologies Used
+
+| Component | Technology |
+|---|---|
+| Robot middleware | ROS 2 Jazzy |
+| Simulation | Gazebo Harmonic |
+| Programming | Python |
+| Path planning | A* |
+| Learning | ANN, Transformer, Double DQN |
+| Robot communication | ROS 2 / DDS |
+| Sensors | LiDAR, RGB camera, odometry |
+| Deep learning framework | PyTorch |
+
+## How to Run
+
+### 1. Prerequisites
+
+The Gazebo simulation requires:
+
+- Ubuntu with ROS 2 Jazzy
+- Gazebo Harmonic
+- `ros_gz_bridge`
+- Python virtual environment (`.venv`) with PyTorch
+
+Install and configure the required ROS 2 and Gazebo packages before launching.
+
+### 2. Clone the Repository
+
+```bash
+git clone https://github.com/Supreyo119/Multi_ROBOTS.git
+cd Multi_ROBOTS
+```
+
+### 3. Launch the Gazebo Simulation
+
+After configuring the Python environment and dependencies, run:
 
 ```bash
 bash Multi_ROBOTS/launch/launch_gazebo.sh
 ```
 
-The launcher opens Gazebo, spawns a gold leader and blue/purple followers, bridges velocity commands and odometry, and runs online Transformer DQN follower control at 10 Hz. Close Gazebo or press Ctrl+C in the launcher terminal to stop. Logs are written under `Multi_ROBOTS/` to `gazebo.log`, `bridge.log`, and `controller.log`. `gazebo_world.py` generates the self-contained `formation.sdf`; no model downloads are required. The launcher uses Gazebo partition `rl_three_robot_formation` and ROS domain 47 to isolate its traffic. The Gazebo controller learns its own neural expert weights online; the standalone Python demo below uses the original tabular policy.
+This launches the simulation environment, creates three robots, initializes ROS 2 communication, and starts the multi-agent formation controller.
 
-One primary robot follows a smooth route; two differential-drive followers learn to track positions 1.5 m behind it and 0.9 m to either side. Python 3.10+ is sufficient. The live display also requires Tkinter (often supplied by the OS `python3-tk` package).
+Close Gazebo or press `Ctrl+C` in the launching terminal to stop the simulation.
+
+## Standalone Python Simulation
+
+The project also includes a standalone formation-control simulation using tabular Q-learning.
+
+**Run the simulation:**
 
 ```bash
 python3 Multi_ROBOTS/scripts/robot_formation.py
 ```
 
-Train without opening a window:
+**Train the controller without the graphical interface:**
 
 ```bash
 python3 Multi_ROBOTS/scripts/robot_formation.py --headless --episodes 2500
+```
+
+**Load a saved policy:**
+
+```bash
 python3 Multi_ROBOTS/scripts/robot_formation.py --load
 ```
 
-The saved `policy.json` contains a shared tabular Q-learning policy. Each follower observes quantized distance and bearing to its formation target, heading alignment, and nearby-robot proximity. Nine actions combine three forward speeds with three turn rates. Rewards encourage progress and accurate formation, and penalize proximity. Learning uses epsilon-greedy exploration, learning rate 0.15, and discount 0.96. The leader uses a predefined controller; reinforcement learning controls both followers.
+The standalone simulation uses tabular Q-learning, whereas the Gazebo implementation uses an ANN/Transformer-based DQN controller.
 
-Evaluation prints mean formation error and the number of steps with robot separation below 0.55 m. Training is approximate and does not guarantee collision avoidance. This is a software simulation with optional Gazebo/ROS integration. Real hardware needs localization, communications, motor interfaces, and an independent safety controller.
-
-Project layout:
+## Project Structure
 
 ```text
 Multi_ROBOTS/
-├── scripts/  # Controllers, world/map generation, and support modules
-├── worlds/   # formation.sdf
-├── config/   # policy.json and arena.yaml
-├── maps/     # arena.pgm and arena.json
-├── models/   # Follower Transformer checkpoints
-├── launch/   # launch_gazebo.sh
-└── tests/    # System and pose recovery tests
+├── scripts/       # Navigation and robot control
+├── launch/        # Gazebo launcher
+├── worlds/        # Gazebo simulation environment
+├── config/        # Policies and configuration
+├── maps/          # Arena and obstacle maps
+├── models/        # Neural network checkpoints
+└── tests/         # Simulation and control tests
 ```
 
-The launcher uses the workspace-root `.venv`. Map metadata in `config/arena.yaml`
-references `../maps/arena.pgm`. Generated worlds, maps, policies, and checkpoints
-use paths relative to the project, independent of the calling directory.
+## Future Development
+
+Future directions include:
+
+- Improving multi-agent coordination and formation stability.
+- Investigating reinforcement learning for adaptive navigation.
+- Evaluating navigation performance under different obstacle configurations.
+- Exploring uncertainty-aware path planning and control.
+- Transferring simulation-developed controllers to physical mobile robots.
+
+## Additional Documentation
+
+For technical details about the Gazebo architecture, control protocol, and implementation limitations, see [GAZEBO.md](GAZEBO.md).
+
+## Author
+
+**Supreyo Chakravorty Pretom**
+
+Lecturer, Department of Electrical and Electronic Engineering  
+University of Global Village, Bangladesh
+
+GitHub: [Supreyo119](https://github.com/Supreyo119)
+
+---
+
+*This project is a research-oriented simulation platform. Learning-based navigation is experimental and does not guarantee collision-free movement.*
